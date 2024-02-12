@@ -1,0 +1,18 @@
+package com.seb_main_034.SERVER.moviesearch.entity;
+
+import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Data
+@Entity
+public class MovieSearch {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String keyword;
+    private String field;
+}
