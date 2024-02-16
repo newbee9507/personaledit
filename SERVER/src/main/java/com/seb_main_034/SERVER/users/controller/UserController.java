@@ -55,6 +55,7 @@ public class UserController {
     public ResponseEntity update(@PathVariable @Positive Long userId,
                                  @Valid @RequestBody UserPatchDto userPatchDto,
                                  @AuthenticationPrincipal Users user) {
+        log.info("유저정보조회 = {}", user.toString());
         verifyUserId(user, userId);
         Users updatedUser = service.update(userId, userPatchDto);
         log.info("수정정보실험 = {}, 유저ID = {}", userPatchDto.getNickName(), userId);
@@ -85,7 +86,6 @@ public class UserController {
     }
 
     private void verifyUserId(Users requestUser, Long userId) {
-        if(requestUser == null) return;
         Long loginUserId = requestUser.getUserId();
         if (loginUserId.equals(userId) || checkAdmin(requestUser)) {
             return;

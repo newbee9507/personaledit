@@ -83,6 +83,7 @@ public class CommentController {
     }
 
     private void checkExistComment(Long movieId, Users user) {
+
         Movie movie = movieService.findMovie(movieId);
         List<Comment> commentList = movie.getCommentList();
 

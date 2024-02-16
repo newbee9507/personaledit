@@ -43,7 +43,7 @@ public class Movie {
     private List<Comment> commentList = new ArrayList<>(); // 이 부분을 수정
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.REMOVE)
-    private List<Rating> ratingList = new ArrayList<>();  // 새로운 필드 추가
+    private List<Rating> ratingList = new ArrayList<>();
 
     private String streamingURL;
 

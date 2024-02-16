@@ -13,7 +13,10 @@ import java.util.stream.Collectors;
 @Component
 public class UsersAuthorityUtils {
 
-    @Value("${mail.address.admin}") // application.yml에서 가져옴.
+    public UsersAuthorityUtils( @Value("${mail.address.admin}") String adminEmail) {
+        this.adminEmail = adminEmail;
+    }
+
     @Getter
     private String adminEmail;
 

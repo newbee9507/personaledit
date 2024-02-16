@@ -23,7 +23,7 @@ public class Users {
     @Column(nullable = false, updatable = false, unique = true)
     private String email;
 
-    @Length(min = 8, max = 200)
+    @Length(min = 8, max = 200, message = "비밀번호는 8자 이상이어야 합니다.")
     @Column(nullable = false)
     private String password;
 

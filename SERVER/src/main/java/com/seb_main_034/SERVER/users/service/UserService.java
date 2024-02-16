@@ -29,11 +29,11 @@ public class UserService {
     private final UsersAuthorityUtils authorityUtils; // 권한 설정을 위한 클래스
 
     public Users save(Users user) {
-
-        if (checkEmail(user.getEmail(), user.getNickName())) { // 이미 서버에 존재하는 이메일인지 확인
+        if (checkEmail(user.getEmail()) && checkNickname(user.getNickName())) { // 이미 서버에 존재하는 이메일인지 확인
             user.setPassword(encoder.encode(user.getPassword())); // 비밀번호 암호화
             List<String> roles = authorityUtils.createRoles(user.getEmail()); // 권한 설정
             user.setRoles(roles);
+
             return repository.save(user);
         }
         return null;
@@ -45,6 +45,7 @@ public class UserService {
     }
 
     public Users update(Long userId, UserPatchDto userPatchDto) {
+        log.info("매퍼 ={}", patchMapper);
         log.info("업데이트 요청 회원의 Id = {}", userId);
         Users findUser = findById(userId);
         if (repository.findBynickName(userPatchDto.getNickName()).isPresent()) {
@@ -97,13 +98,13 @@ public class UserService {
      * 회원가입시, 이메일과 닉네임의 중복을 체크하는 메서드.
      * 단, 닉네임이 null로 같아도 에러가나는데, 이 부분 수정 필요.
      */
-    public boolean checkEmail(String email, String nickName) {
-
+    public boolean checkEmail(String email) {
         if (repository.findByEmail(email).isPresent()) {
             log.error("중복된 이메일 요청 = {}", email);
             throw new GlobalException(ExceptionCode.USER_EXISTS);
-        }
-
+        } return true;
+    }
+    public boolean checkNickname(String nickName) {
         if (repository.findBynickName(nickName).isPresent()) {
             log.error("중복된 닉네임 요청 = {}", nickName);
             throw new GlobalException(ExceptionCode.NICKNAME_EXISTS);

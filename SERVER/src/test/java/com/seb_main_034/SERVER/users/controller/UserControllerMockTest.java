@@ -1,6 +1,7 @@
 package com.seb_main_034.SERVER.users.controller;
 
 import com.google.gson.Gson;
+import com.seb_main_034.SERVER.forTestUtils.ForMockTestCustomUser;
 import com.seb_main_034.SERVER.users.dto.PasswordDto;
 import com.seb_main_034.SERVER.users.dto.UserPatchDto;
 import com.seb_main_034.SERVER.users.dto.UserSaveDto;
@@ -11,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,7 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,14 +53,14 @@ class UserControllerMockTest {
      */
     @BeforeAll
     static void setDtos() {
-        dtos.add(new UserSaveDto("admin@gmail.com", "123456789a", "관리자", ""));
+        dtos.add(new UserSaveDto("admin@gmail.com", "adminPw123", "admin", "adminPicture"));
         dtos.add(new UserSaveDto("test@gmail.com", "123456789a", "회원", ""));
         dtos.add(new UserSaveDto("test@gmail.com", "pwError", "일반유저", ""));
         dtos.add(new UserSaveDto("test2@gmail.com", "123456789a", "1", ""));
     }
 
     @Test
-    @WithMockUser
+    @ForMockTestCustomUser
     @DisplayName("유저정보 조회")
     void info() throws Exception {
         //given
@@ -170,7 +169,7 @@ class UserControllerMockTest {
     }
 
     @Test
-    @WithMockUser
+    @ForMockTestCustomUser()
     @DisplayName("유저정보 수정")
     void update() throws Exception {
         //given
@@ -183,7 +182,7 @@ class UserControllerMockTest {
 
         //when
         ResultActions updateAction = mockMvc.perform(
-                                    patch("/api/users/update/1")
+                                    patch("/api/users/update/3")
                                     .accept(MediaType.APPLICATION_JSON)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(updateJson)
@@ -197,7 +196,7 @@ class UserControllerMockTest {
     }
 
     @Test
-    @WithMockUser
+    @ForMockTestCustomUser
     @DisplayName("비밀번호 변경 - 성공,에러 모두 테스트")
     void updatePassword() throws Exception {
         //given
@@ -207,7 +206,7 @@ class UserControllerMockTest {
         String successJson = gson.toJson(successDto);
         String failJson = gson.toJson(failDto);
 
-        doNothing().when(userService).changePw(1L,successDto);
+        doNothing().when(userService).changePw(Mockito.anyLong(),Mockito.any(PasswordDto.class));
 
         //when
         ResultActions successActions = mockMvc.perform(
@@ -228,10 +227,11 @@ class UserControllerMockTest {
                 .andExpect((content().string("변경 완료")));
 
         failActions.andExpect(status().isBadRequest());
+
     }
 
     @Test
-    @WithMockUser
+    @ForMockTestCustomUser
     @DisplayName("회원탈퇴")
     void deleteUser() throws Exception {
         //given
