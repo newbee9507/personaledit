@@ -7,6 +7,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
@@ -21,7 +23,7 @@ public class RefreToken {
     @NotBlank
     private String token;
 
-    private LocalDateTime createAt;
+    private OffsetDateTime createAt;
 
     public RefreToken(String token) {
         this.token = token;
@@ -29,6 +31,6 @@ public class RefreToken {
 
     @PrePersist
     public void setCreateAt() {
-        this.createAt = LocalDateTime.now();
+        this.createAt = OffsetDateTime.now();
     }
 }

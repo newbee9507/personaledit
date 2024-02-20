@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class RefreTokenController {
             String encodedBase64SecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
             String newAccessToken = createNewAccessToken(refreshToken, encodedBase64SecretKey);
 
-            LocalDateTime expirationTime = LocalDateTime.now().plus(30, ChronoUnit.MINUTES);
+            OffsetDateTime expirationTime = OffsetDateTime.now().plus(30, ChronoUnit.MINUTES);
 
             response.setHeader("Authorization", bea + newAccessToken); // jwtTokenizer 클래스를 통해 새로운 엑세스토큰 생성 및 reponse헤더에 설정
             response.setHeader("expirationTime", String.valueOf(expirationTime)); // 만료시간

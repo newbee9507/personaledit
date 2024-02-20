@@ -14,7 +14,6 @@ import com.seb_main_034.SERVER.rating.dto.RatingDTO;
 import com.seb_main_034.SERVER.rating.entity.Rating;
 import com.seb_main_034.SERVER.rating.mapper.RatingMapper;
 import com.seb_main_034.SERVER.rating.service.RatingService;
-import com.seb_main_034.SERVER.recommendation.service.RecommendationService;
 import com.seb_main_034.SERVER.users.entity.Users;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +41,6 @@ public class MovieController {
     private final CommentMapper commentMapper;
     private final RatingService ratingService;
     private final RatingMapper ratingMapper;
-    private final RecommendationService recommendationService;
 
     //영화 정보 등록
     @PostMapping
@@ -101,21 +99,6 @@ public class MovieController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-    //사용자 선호 장르 영화 추천
-    @GetMapping("/recommendations/user/{userId}")
-    public ResponseEntity<List<MovieResponseDto>> getUserBasedRecommendations(@PathVariable Long userId) {
-        List<MovieResponseDto> response = recommendationService.recommendMoviesBasedOnUserGenre(userId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-    //상위 평점 4점이상 영화 추천
-
-    @GetMapping("/recommendations/top-rated")
-    public ResponseEntity<List<MovieResponseDto>> getTopRatedRecommendations() {
-        List<MovieResponseDto> response = recommendationService.recommendTopRatedMovies();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
 
     //영화 키워드를 통한 쿼리문 검색
     @GetMapping("/search")

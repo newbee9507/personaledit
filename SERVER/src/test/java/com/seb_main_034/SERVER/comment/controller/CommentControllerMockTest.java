@@ -1,16 +1,22 @@
 package com.seb_main_034.SERVER.comment.controller;
 
 import com.google.gson.Gson;
+import com.seb_main_034.SERVER.auth.jwt.JwtTokenizer;
+import com.seb_main_034.SERVER.auth.utils.UsersAuthorityUtils;
 import com.seb_main_034.SERVER.comment.dto.CommentUpdateDto;
+import com.seb_main_034.SERVER.comment.mapper.CommentMapperImpl;
 import com.seb_main_034.SERVER.forTestUtils.ForMockTestCustomUser;
 import com.seb_main_034.SERVER.comment.dto.CommentSaveDto;
 import com.seb_main_034.SERVER.comment.entity.Comment;
 import com.seb_main_034.SERVER.comment.mapper.CommentMapper;
 import com.seb_main_034.SERVER.comment.service.CommentService;
+import com.seb_main_034.SERVER.forTestUtils.ForTestUserDetailsService;
 import com.seb_main_034.SERVER.movie.entity.Movie;
 import com.seb_main_034.SERVER.movie.service.MovieService;
 import com.seb_main_034.SERVER.rating.entity.Rating;
+import com.seb_main_034.SERVER.users.controller.UserController;
 import com.seb_main_034.SERVER.users.entity.Users;
+import com.seb_main_034.SERVER.users.mapper.UserMapperImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -18,24 +24,27 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 @Slf4j
-@SpringBootTest
-@AutoConfigureMockMvc
-class CommentControllerTest {
+@WebMvcTest(controllers = {CommentController.class})
+@Import({CommentMapperImpl.class, UsersAuthorityUtils.class, ForTestUserDetailsService.class})
+class CommentControllerMockTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,12 +65,12 @@ class CommentControllerTest {
 
     @BeforeAll
     static void setting() {
-        tmp.add(new Comment(1L, "adminText", "admin", LocalDateTime.now(),
-                LocalDateTime.now(), createUser("admin@gmail.com"), new Movie(), new Rating()));
-        tmp.add(new Comment(2L, "userText1", "user1", LocalDateTime.now(),
-                LocalDateTime.now(), createUser("user@gmail.com"), new Movie(), new Rating()));
+        tmp.add(new Comment(1L, "adminText", "admin", OffsetDateTime.now(),
+                OffsetDateTime.now(), createUser("admin@gmail.com"), new Movie(), new Rating()));
+        tmp.add(new Comment(2L, "userText1", "user1", OffsetDateTime.now(),
+                OffsetDateTime.now(), createUser("user@gmail.com"), new Movie(), new Rating()));
         tmp.add(new Comment(2L, "updateText", "user1", tmp.get(1).getCreateAt(),
-                LocalDateTime.now(), tmp.get(1).getUser(), tmp.get(1).getMovie(), tmp.get(1).getRating()));
+                OffsetDateTime.now(), tmp.get(1).getUser(), tmp.get(1).getMovie(), tmp.get(1).getRating()));
     }
 
     @Test
@@ -81,7 +90,7 @@ class CommentControllerTest {
 
         //when
         ResultActions saveComment = mockMvc.perform(
-                post("/api/comment/1/add")
+                post("/api/comment/1/add").with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(new CommentSaveDto("adminText")))
@@ -108,7 +117,7 @@ class CommentControllerTest {
 
         //when
         ResultActions updateActions = mockMvc.perform(
-                patch("/api/comment/1/update/2")
+                patch("/api/comment/1/update/2").with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(updateDto))
@@ -135,7 +144,8 @@ class CommentControllerTest {
 
         //when
         ResultActions deleteActions = mockMvc.perform(
-                delete("/api/comment/1/delete/1"));
+                delete("/api/comment/1/delete/1").with(csrf())
+        );
 
         //then
         deleteActions.andExpect(status().isOk())

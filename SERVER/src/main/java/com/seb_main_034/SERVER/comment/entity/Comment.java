@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Getter
@@ -25,9 +26,9 @@ public class Comment {
 
     private String nickName;
 
-    private LocalDateTime createAt;
+    private OffsetDateTime createAt;
 
-    private LocalDateTime modifyAt;
+    private OffsetDateTime modifyAt;
 
 //    private List<Comment> reComment; // 대댓글. 댓글기능 완성 후 구현 고려
 
@@ -46,13 +47,12 @@ public class Comment {
     // 만들어진 일시
     @PrePersist
     public void setCreateAt() {
-        this.createAt = LocalDateTime.now();
+        this.createAt = OffsetDateTime.now();
     }
-
     // 수정된 시간
     @PreUpdate
     public void setModifyAt() {
-        this.modifyAt = LocalDateTime.now();
+        this.modifyAt = OffsetDateTime.now();
     }
 
     public Comment() {

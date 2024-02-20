@@ -4,7 +4,6 @@ import com.seb_main_034.SERVER.comment.entity.Comment;
 import com.seb_main_034.SERVER.comment.repository.CommentRepository;
 import com.seb_main_034.SERVER.exception.GlobalException;
 import com.seb_main_034.SERVER.movie.entity.Movie;
-import com.seb_main_034.SERVER.movie.repository.MovieRepository;
 import com.seb_main_034.SERVER.movie.service.MovieService;
 import com.seb_main_034.SERVER.rating.entity.Rating;
 import com.seb_main_034.SERVER.users.entity.Users;
@@ -18,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +28,7 @@ import static org.mockito.BDDMockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-class CommentServiceTest {
+class CommentServiceMockTest {
 
     @Mock
     private CommentRepository repository;
@@ -56,10 +55,10 @@ class CommentServiceTest {
         list.add(movie);
 
         list.add(new Comment(1L, "댓글", "닉네임",
-                LocalDateTime.now(), LocalDateTime.now(), admin, movie, new Rating()));
+                OffsetDateTime.now(), OffsetDateTime.now(), admin, movie, new Rating()));
 
         list.add(new Comment(10L, "업데이트댓글", "닉네임",
-                LocalDateTime.now(), LocalDateTime.now(), user, movie, new Rating()));
+                OffsetDateTime.now(), OffsetDateTime.now(), user, movie, new Rating()));
     }
 
     @Test

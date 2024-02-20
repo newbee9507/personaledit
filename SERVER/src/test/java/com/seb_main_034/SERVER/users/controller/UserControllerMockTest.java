@@ -1,22 +1,27 @@
 package com.seb_main_034.SERVER.users.controller;
 
 import com.google.gson.Gson;
+import com.seb_main_034.SERVER.auth.utils.UsersAuthorityUtils;
 import com.seb_main_034.SERVER.forTestUtils.ForMockTestCustomUser;
+import com.seb_main_034.SERVER.forTestUtils.ForTestUserDetailsService;
 import com.seb_main_034.SERVER.users.dto.PasswordDto;
 import com.seb_main_034.SERVER.users.dto.UserPatchDto;
 import com.seb_main_034.SERVER.users.dto.UserSaveDto;
 import com.seb_main_034.SERVER.users.entity.Users;
 import com.seb_main_034.SERVER.users.mapper.UserMapper;
+import com.seb_main_034.SERVER.users.mapper.UserMapperImpl;
 import com.seb_main_034.SERVER.users.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,12 +31,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Slf4j
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = {UserController.class})
+@Import({UserMapperImpl.class, UsersAuthorityUtils.class, ForTestUserDetailsService.class})
 class UserControllerMockTest {
 
     @Autowired
@@ -70,7 +76,7 @@ class UserControllerMockTest {
 
         //when
         ResultActions getAdminInfoAction = mockMvc.perform(
-                get("/api/users/info/1")
+                get("/api/users/info/1").with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
         );
 
@@ -83,7 +89,7 @@ class UserControllerMockTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @ForMockTestCustomUser
     @DisplayName("모든 유저정보 조회")
     void allUsers() throws Exception {
         //given
@@ -118,6 +124,7 @@ class UserControllerMockTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("회원가입 - 성공,에러 모두 테스트")
     void signUp() throws Exception {
         //given
@@ -137,21 +144,21 @@ class UserControllerMockTest {
 
         //when
         ResultActions adminSaveAction = mockMvc.perform(
-                post("/api/users/register")
+                post("/api/users/register").with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(adminDto))
         );
 
         ResultActions passwordErrorAction = mockMvc.perform(
-                post("/api/users/register")
+                post("/api/users/register").with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(passwordErrorDto))
         );
 
         ResultActions nickNameErrorAction = mockMvc.perform(
-                post("/api/users/register")
+                post("/api/users/register").with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gson.toJson(nickNameErrorDto))
@@ -182,7 +189,7 @@ class UserControllerMockTest {
 
         //when
         ResultActions updateAction = mockMvc.perform(
-                                    patch("/api/users/update/3")
+                                    patch("/api/users/update/1").with(csrf())
                                     .accept(MediaType.APPLICATION_JSON)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(updateJson)
@@ -210,13 +217,13 @@ class UserControllerMockTest {
 
         //when
         ResultActions successActions = mockMvc.perform(
-                patch("/api/users/password/1")
+                patch("/api/users/password/1").with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(successJson));
 
         ResultActions failActions = mockMvc.perform(
-                patch("/api/users/password/1")
+                patch("/api/users/password/1").with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(failJson)
@@ -243,7 +250,8 @@ class UserControllerMockTest {
 
         //when
         ResultActions deleteActions = mockMvc.perform(
-                delete("/api/users/delete/1"));
+                delete("/api/users/delete/1").with(csrf())
+        );
 
         //then
         deleteActions.andExpect(status().isOk())

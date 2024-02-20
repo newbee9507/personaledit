@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class CommentResponseDto {
 
     private String nickName;
 
-    private LocalDateTime createAt;
+    private OffsetDateTime createAt;
 
-    private LocalDateTime modifyAt;
+    private OffsetDateTime modifyAt;
 }
